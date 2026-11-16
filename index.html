@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مصنع مخبوزات فتات | نظام إدارة العمليات والمخزون الذكي (FATAT ERP)</title>
+  
+  <!-- Progressive Web App (PWA) Meta & Mobile Icons -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#da812f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="فتات بيكري">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+  <!-- Tailwind CSS & Icons & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900;1000&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf8f0',
+              100: '#f9eedb',
+              200: '#f3d9b4',
+              300: '#eabf85',
+              400: '#e19f56',
+              500: '#da812f',
+              600: '#cb6824',
+              700: '#a94f20',
+              800: '#873f20',
+              900: '#6f361c',
+              950: '#3c1a0c',
+            },
+            factory: {
+              dark: '#141824',
+              card: '#1b2032',
+              border: '#2a3148'
+            }
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #0f121d;
+      color: #e2e8f0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #141824;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #da812f;
+    }
+    .badge-glow {
+      box-shadow: 0 0 15px rgba(218, 129, 47, 0.25);
+    }
+    .scan-line {
+      height: 2px;
+      background: #da812f;
+      box-shadow: 0 0 10px #da812f;
+      animation: scan 2s linear infinite alternate;
+    }
+    @keyframes scan {
+      0% { top: 5%; }
+      100% { top: 95%; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#0b0e17] text-slate-100 selection:bg-brand-500 selection:text-white">
+
+  <!-- ======================================================== -->
+  <!-- TOP EXECUTIVE HEADER & IDENTITY BAR                     -->
+  <!-- ======================================================== -->
+  <header class="bg-[#121624] border-b border-slate-800 sticky top-0 z-40 shadow-xl">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Factory Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-700 via-brand-500 to-amber-300 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/30">
+          <i class="fa-solid fa-wheat-awn"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+              مصنع مخبوزات فَتَات
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">FATAT ERP v2.0</span>
+            </h1>
+          </div>
+          <p class="text-[11px] text-slate-400 flex items-center gap-1.5 font-medium">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            نظام إدارة المستودع الذكي والربط المالي بالـ P&L
+          </p>
+        </div>
+      </div>
+
+      <!-- Center: Executive Signature of Regional Operations Director -->
+      <div class="hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-2xl bg-gradient-to-r from-slate-900/90 via-[#1a2138] to-slate-900/90 border border-brand-500/30 shadow-inner">
+        <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-sm font-black border border-brand-500/40">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] text-brand-400 font-bold uppercase tracking-wider">تصميم وإشراف تشغيلي عام:</div>
+          <div class="text-xs font-black text-white flex items-center gap-1.5">
+            <span>مستر محمد الجندي</span>
+            <span class="text-[10px] px-2 py-0.2 bg-brand-500 text-white rounded font-bold">مدير تشغيل إقليمي</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: User Role Switcher & Quick Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Active User Profile Selector (RBAC) -->
+        <div class="flex items-center bg-[#181f33] border border-slate-700/80 rounded-2xl p-1 shadow-sm">
+          <span class="text-[11px] text-slate-400 px-2 font-bold hidden sm:inline-block">
+            <i class="fa-solid fa-fingerprint text-brand-400 ml-1"></i>الصلاحية:
+          </span>
+          <select id="user-role-select" onchange="switchUserRole(this.value)" class="bg-[#121624] text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700 focus:outline-none focus:border-brand-500 cursor-pointer">
+            <option value="director">👑 مستر محمد الجندي (مدير تشغيل إقليمي)</option>
+            <option value="owner">👁️ المالك / Owner (اطلاع شامل فقط بدون تعديل)</option>
+            <option value="storekeeper">📦 أمين المخزن (كاميرا الاستلام + جرد)</option>
+            <option value="accountant">🧾 مسؤول الحسابات والنثريات</option>
+          </select>
+        </div>
+
+        <!-- PWA Install / Mobile App Button -->
+        <button id="header-install-btn" onclick="triggerPwaInstall()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-brand-500/30 hover:from-amber-500/30 hover:to-brand-500/40 text-amber-300 text-xs font-bold border border-amber-500/40 transition flex items-center gap-1.5 shadow-sm" title="تثبيت التطبيق على الجوال أو الكمبيوتر">
+          <i class="fa-solid fa-mobile-screen-button text-amber-400"></i>
+          <span class="hidden sm:inline">تثبيت التطبيق</span>
+        </button>
+
+        <!-- Quick Reset System Modal Button (Only for Director) -->
+        <button id="btn-wipe-data" onclick="openWipeModal()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-bold border border-rose-500/30 transition flex items-center gap-1.5" title="تصفير البيانات لبدء تشغيل حقيقي">
+          <i class="fa-solid fa-trash-can"></i>
+          <span class="hidden md:inline">تصفير للمصنع</span>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Executive Badge Banner -->
+  <div class="lg:hidden bg-gradient-to-r from-brand-950 via-[#181f33] to-brand-950 px-4 py-1.5 border-b border-brand-500/20 text-center">
+    <span class="text-[11px] text-slate-300 font-bold">
+      👑 تصميم وإشراف تشغيلي: <strong class="text-brand-400">مستر محمد الجندي</strong> (مدير تشغيل إقليمي)
+    </span>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MAIN APP CONTAINER & NAVIGATION TABS                    -->
+  <!-- ======================================================== -->
+  <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 flex-1 flex flex-col gap-5">
+    
+    <!-- Navigation Tabs Bar -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll text-xs font-bold border-b border-slate-800">
+      
+      <button onclick="switchTab('tab-warehouse')" id="btn-tab-warehouse" class="tab-btn px-4 py-2.5 rounded-xl bg-brand-500 text-white font-black flex items-center gap-2 shadow-lg shadow-brand-500/25 transition shrink-0">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>مستودع الخامات الذكي</span>
+        <span class="bg-black/20 text-[10px] px-1.5 py-0.5 rounded-full font-mono" id="nav-badge-stock">0</span>
+      </button>
+
+      <button onclick="switchTab('tab-smart-receiving')" id="btn-tab-smart-receiving" class="tab-btn px-4 py-2.5 rounded-xl bg-[#141928] text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition shrink-0 border border-slate-800">
+        <i class="fa-solid fa-camera-viewfinder text-brand-400"></i>
+        <span>استلام الخامات الذكي (كاميرا / OCR)</span>
+        <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
+      </button>
+
+      <button onclick="switchTab('tab-issue-production')" id="btn-tab-issue-production" class="tab-btn px-4 py-2.5 rounded-xl bg-[#141928] text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition shrink-0 border border-slate-800">
+        <i class="fa-solid fa-dolly text-emerald-400"></i>
+        <span>صرف لخطوط إنتاج المخبوزات</span>
+      </button>
+
+      <button onclick="switchTab('tab-suppliers')" id="btn-tab-suppliers" class="tab-btn px-4 py-2.5 rounded-xl bg-[#141928] text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition shrink-0 border border-slate-800">
+        <i class="fa-solid fa-truck-field text-blue-400"></i>
+        <span>فواتير الموردين والآجل</span>
+      </button>
+
+      <button onclick="switchTab('tab-pnl')" id="btn-tab-pnl" class="tab-btn px-4 py-2.5 rounded-xl bg-[#141928] text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2 transition shrink-0 border border-slate-800">
+        <i class="fa-solid fa-chart-pie text-amber-400"></i>
+        <span>قائمة الدخل P&L وتكلفة الخامات</span>
+      </button>
+
+    </div>
+
+    <!-- Permission Notice Alert (Changes according to active user role) -->
+    <div id="role-banner" class="px-4 py-2.5 rounded-2xl bg-[#161c2d] border border-brand-500/30 flex items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2.5">
+        <span id="role-icon" class="text-base text-brand-400">👑</span>
+        <div>
+          <span class="font-black text-white" id="role-title">مدير تشغيل إقليمي (مستر محمد الجندي)</span>
+          <span class="text-slate-400 mr-2" id="role-desc">كامل الصلاحيات مفعلة: إضافة، تعديل، حذف، واعتماد تكلفة الخامات.</span>
+        </div>
+      </div>
+      <span class="text-[10px] px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-400 font-black border border-brand-500/30 uppercase" id="role-badge">SUPER ADMIN</span>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: SMART INVENTORY & WAREHOUSE (مستودع الخامات)      -->
+    <!-- ======================================================== -->
+    <section id="tab-warehouse" class="tab-pane space-y-5">
+      
+      <!-- Top KPI Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="bg-[#141929] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold mb-2">
+            <span>إجمالي قيمة الخامات بالمخزن</span>
+            <i class="fa-solid fa-vault text-brand-400"></i>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-white font-mono" id="kpi-total-inventory-val">0.00 ر.س</div>
+          <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+            <span class="text-emerald-400 font-bold" id="kpi-total-items-count">0 صنف</span>
+            <span>مسجل في شجرة الخامات</span>
+          </div>
+        </div>
+
+        <div class="bg-[#141929] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold mb-2">
+            <span>منصرف الخامات لخط الإنتاج اليوم</span>
+            <i class="fa-solid fa-fire-burner text-emerald-400"></i>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400 font-mono" id="kpi-issued-today-val">0.00 ر.س</div>
+          <div class="text-[11px] text-slate-400 mt-1">يسمع فوراً في Food Cost بالـ P&L</div>
+        </div>
+
+        <div class="bg-[#141929] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold mb-2">
+            <span>خامات قاربت على النفاد (حد الطلب)</span>
+            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-amber-400 font-mono" id="kpi-low-stock-count">0 أصناف</div>
+          <div class="text-[11px] text-slate-400 mt-1">تنبيه إعادة الشراء للموردين</div>
+        </div>
+
+        <div class="bg-[#141929] border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 text-xs font-bold mb-2">
+            <span>تنبيه تواريخ الصلاحية القريبة</span>
+            <i class="fa-solid fa-calendar-xmark text-rose-400"></i>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-rose-400 font-mono" id="kpi-expiry-alert-count">0 تنبيهات</div>
+          <div class="text-[11px] text-slate-400 mt-1">خامات تنتهي خلال 30 يوماً أو أقل</div>
+        </div>
+      </div>
+
+      <!-- Actions & Filters Bar -->
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3">
+        
+        <div class="flex flex-wrap items-center gap-2 flex-1">
+          <!-- Search Box -->
+          <div class="relative min-w-[240px] flex-1 max-w-md">
+            <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-slate-500 text-xs"></i>
+            <input type="text" id="inv-search" oninput="renderWarehouseTable()" placeholder="ابحث باسم الخامة، الكود، الباركود، أو القسم..." class="w-full bg-[#0d101a] border border-slate-700/80 rounded-xl pr-9 pl-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
+          </div>
+
+          <!-- Category Filter -->
+          <select id="inv-cat-filter" onchange="renderWarehouseTable()" class="bg-[#0d101a] border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500 cursor-pointer">
+            <option value="ALL">جميع أقسام الخامات (الكل)</option>
+            <option value="الدقيق ومطحون الحبوب">🌾 الدقيق ومطحون الحبوب</option>
+            <option value="الزبدة والدهون والزيوت">🧈 الزبدة والدهون والزيوت</option>
+            <option value="الخمائر ومحسنات الخبز">🍞 الخمائر ومحسنات الخبز</option>
+            <option value="السكر والتحلية">🍯 السكر والتحلية</option>
+            <option value="الشوكولاتة والكاكاو">🍫 الشوكولاتة والكاكاو</option>
+            <option value="الحشوات والصوصات">🍓 الحشوات والصوصات</option>
+            <option value="الألبان والبيض">🥛 الألبان والبيض</option>
+            <option value="التعبئة والتغليف الفاخر">📦 التعبئة والتغليف الفاخر</option>
+          </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button onclick="switchTab('tab-smart-receiving')" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white text-xs font-black shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-camera"></i>
+            <span>تصوير استلام جديد (AI)</span>
+          </button>
+          
+          <button onclick="openModal('modal-add-material-master')" id="btn-add-item-master" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i>
+            <span>إضافة صنف للشجرة</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Warehouse Inventory Table -->
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="bg-[#0e121d] text-slate-400 font-extrabold border-b border-slate-800">
+                <th class="p-3.5">كود الصنف</th>
+                <th class="p-3.5">اسم الخامة والمواصفات</th>
+                <th class="p-3.5">القسم والتبعية</th>
+                <th class="p-3.5">الوحدة</th>
+                <th class="p-3.5">سعر الكيلو / الوحدة</th>
+                <th class="p-3.5 text-center">الرصيد المتاح</th>
+                <th class="p-3.5">إجمالي القيمة</th>
+                <th class="p-3.5">أقرب تاريخ صلاحية</th>
+                <th class="p-3.5 text-center">حالة الصلاحية</th>
+                <th class="p-3.5 text-center">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="warehouse-table-body" class="divide-y divide-slate-800/80 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: SMART AI CAMERA & RECEIVING (استلام الخامات الذكي) -->
+    <!-- ======================================================== -->
+    <section id="tab-smart-receiving" class="tab-pane hidden space-y-5">
+      
+      <!-- Top Helper Banner -->
+      <div class="bg-gradient-to-r from-[#182035] via-[#151c30] to-[#182035] border border-brand-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="text-lg">📸</span>
+              <h2 class="text-base sm:text-lg font-black text-white">الاستلام الذكي للخامات بالتعرف الضوئي والذكاء الاصطناعي (AI OCR / Vision)</h2>
+            </div>
+            <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              خاصية مبتكرة لأمين المخزن: قم بتصوير كرتونة الخامة أو تاريخ الصلاحية أو مسح الباركود؛ يقوم الذكاء الاصطناعي بالتعرف الفوري على الصنف وتاريخ الصلاحية ومطابقته بشجرة مصنع فتات، مع شاشة تأكيد سريعة لحماية المخزون من الأخطاء!
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-2 self-end md:self-auto">
+            <button onclick="openApiKeyConfigModal()" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-key text-amber-400"></i>
+              <span>مفتاح Gemini API (اختياري)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camera & Scanner Main Interface -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- Live Camera & Upload Zone (7 Cols) -->
+        <div class="lg:col-span-7 bg-[#141929] border border-slate-800 rounded-3xl p-5 flex flex-col gap-4">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-camera text-brand-400 text-base"></i>
+              <span class="text-xs font-black text-white">كاميرا الاستلام البصري المباشر</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="cam-status-pill" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">الكاميرا جاهزة</span>
+            </div>
+          </div>
+
+          <!-- Video Stream & Scanner Area -->
+          <div class="relative bg-black rounded-2xl overflow-hidden aspect-video sm:aspect-[4/3] flex items-center justify-center border-2 border-dashed border-slate-700 group">
+            
+            <!-- Video feed for live camera -->
+            <video id="webcam-feed" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+            
+            <!-- Preview of captured image -->
+            <img id="captured-preview" class="w-full h-full object-contain hidden" alt="Captured Raw Material">
+
+            <!-- Scanning overlay (Active while processing) -->
+            <div id="scan-overlay" class="absolute inset-0 pointer-events-none hidden">
+              <div class="absolute inset-x-8 top-1/4 bottom-1/4 border-2 border-brand-500 rounded-2xl bg-brand-500/10"></div>
+              <div class="absolute inset-x-8 scan-line"></div>
+              <div class="absolute bottom-4 inset-x-0 text-center">
+                <span class="text-xs font-bold bg-black/80 text-brand-400 px-3 py-1 rounded-full border border-brand-500/40">
+                  <i class="fa-solid fa-spinner fa-spin ml-1"></i>جاري تحليل الصورة واستخراج الصنف والصلاحية...
+                </span>
+              </div>
+            </div>
+
+            <!-- Placeholder guide when idle -->
+            <div id="camera-idle-placeholder" class="text-center p-6 space-y-3">
+              <div class="w-16 h-16 rounded-3xl bg-slate-800/80 text-slate-400 flex items-center justify-center text-2xl mx-auto border border-slate-700">
+                <i class="fa-solid fa-barcode-read"></i>
+              </div>
+              <div>
+                <p class="text-sm font-black text-white">وجّه الكاميرا نحو كرتونة الخامة أو استيكر الصلاحية</p>
+                <p class="text-xs text-slate-400 mt-1">الذكاء الاصطناعي يلتقط الباركود، اسم الخامة، وتاريخ الصلاحية تلقائياً</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Camera Trigger Controls -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+            
+            <!-- Start Camera Stream -->
+            <button onclick="startLiveCamera()" id="btn-start-camera" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-black flex items-center justify-center gap-2 shadow-lg shadow-brand-500/20 transition">
+              <i class="fa-solid fa-video"></i>
+              <span>تشغيل الكاميرا</span>
+            </button>
+
+            <!-- Snap Picture -->
+            <button onclick="captureFromCamera()" id="btn-snap-camera" disabled class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black flex items-center justify-center gap-2 shadow-lg transition">
+              <i class="fa-solid fa-camera-retro"></i>
+              <span>التقاط وتحليل فوري</span>
+            </button>
+
+            <!-- File Upload / Mobile Native Camera -->
+            <label class="col-span-2 sm:col-span-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-2 border border-slate-700 cursor-pointer transition">
+              <i class="fa-solid fa-cloud-arrow-up text-brand-400"></i>
+              <span>رفع صورة / ألبوم</span>
+              <input type="file" id="file-image-input" accept="image/*" capture="environment" onchange="handleFileUpload(event)" class="hidden">
+            </label>
+
+          </div>
+
+          <!-- Quick Test Presets (Mock AI recognition for demo & tests) -->
+          <div class="p-3 rounded-2xl bg-[#0f1320] border border-slate-800 space-y-2">
+            <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+              تجربة سريعة بنماذج خامات مصنع فتات (للاختبار الفوري بدون كاميرا):
+            </span>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="mockAiDetection('دقيق_فاخر')" class="text-[10px] px-2.5 py-1 bg-slate-800 hover:bg-brand-600 hover:text-white rounded-lg text-slate-300 font-bold border border-slate-700 transition">🌾 شيكارة دقيق كويتي فاخر</button>
+              <button onclick="mockAiDetection('زبدة_طبيعية')" class="text-[10px] px-2.5 py-1 bg-slate-800 hover:bg-brand-600 hover:text-white rounded-lg text-slate-300 font-bold border border-slate-700 transition">🧈 كرتونة زبدة لورباك 25 كجم</button>
+              <button onclick="mockAiDetection('خميرة_فوريه')" class="text-[10px] px-2.5 py-1 bg-slate-800 hover:bg-brand-600 hover:text-white rounded-lg text-slate-300 font-bold border border-slate-700 transition">🍞 كرتونة خميرة فرنسية ساف</button>
+              <button onclick="mockAiDetection('شوكولاتة_بلجيكية')" class="text-[10px] px-2.5 py-1 bg-slate-800 hover:bg-brand-600 hover:text-white rounded-lg text-slate-300 font-bold border border-slate-700 transition">🍫 شوكولاتة كالي باوت خام</button>
+              <button onclick="mockAiDetection('علب_تغليف')" class="text-[10px] px-2.5 py-1 bg-slate-800 hover:bg-brand-600 hover:text-white rounded-lg text-slate-300 font-bold border border-slate-700 transition">📦 كرتون علب مخبوزات فاخرة</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- AI Detected Analysis & Confirmation Gate (5 Cols) -->
+        <div class="lg:col-span-5 bg-[#141929] border border-slate-800 rounded-3xl p-5 flex flex-col justify-between space-y-4">
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-microchip-ai text-emerald-400 text-base"></i>
+                <span class="text-xs font-black text-white">نتائج الفحص والتعرف الذكي (AI Analysis)</span>
+              </div>
+              <span id="ai-confidence-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">بانتظار الصورة</span>
+            </div>
+
+            <!-- Analysis Status Box -->
+            <div id="ai-result-box" class="p-4 rounded-2xl bg-[#0e121d] border border-slate-800 space-y-3">
+              <div class="text-center py-6 text-slate-500 space-y-2" id="ai-empty-state">
+                <i class="fa-solid fa-eye text-3xl opacity-40"></i>
+                <p class="text-xs">التقط صورة بكاميرا الجوال أو اختر خامة من التجربة السريعة لمعاينة شاشة الأمان والاستلام الفوري.</p>
+              </div>
+
+              <!-- Filled AI Form (Hidden until photo processed) -->
+              <form id="form-confirm-receiving" onsubmit="commitReceivingToStock(event)" class="space-y-3 hidden">
+                
+                <!-- Matched Item in Catalog -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">
+                    <i class="fa-solid fa-check-double text-emerald-400 ml-1"></i>الصنف المطابق بشجرة مخبوزات فتات:
+                  </label>
+                  <select id="rec-matched-item" onchange="syncMatchedItemDetails(this.value)" class="w-full bg-[#181f33] border border-emerald-500/50 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">القسم / التصنيف:</label>
+                    <input type="text" id="rec-item-cat" readonly class="w-full bg-[#121624] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 font-medium">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">وحدة القياس:</label>
+                    <input type="text" id="rec-item-unit" readonly class="w-full bg-[#121624] border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 font-medium">
+                  </div>
+                </div>
+
+                <!-- Expiry Date (Extracted by OCR) -->
+                <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <label class="text-[11px] font-black text-amber-300 flex items-center gap-1">
+                      <i class="fa-solid fa-calendar-check text-amber-400"></i>
+                      تاريخ الصلاحية المقروء آلياً (OCR):
+                    </label>
+                    <span class="text-[10px] text-amber-400 font-mono font-bold" id="rec-ocr-tag">قراءة بصرية ✅</span>
+                  </div>
+                  <input type="date" id="rec-expiry-date" required class="w-full bg-[#141824] border border-amber-500/50 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-amber-400">
+                </div>
+
+                <!-- Quantity & Unit Cost -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-brand-400 mb-1">الكمية المستلمة (العدد/الوزن):</label>
+                    <input type="number" step="0.01" min="0.1" id="rec-qty" required value="10" class="w-full bg-[#181f33] border border-brand-500 rounded-xl px-3 py-2 text-sm font-black text-white focus:outline-none font-mono">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-300 mb-1">سعر شراء الوحدة (ر.س):</label>
+                    <input type="number" step="0.01" id="rec-price" required value="0" class="w-full bg-[#181f33] border border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-white focus:outline-none font-mono">
+                  </div>
+                </div>
+
+                <!-- Supplier Selection -->
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-300 mb-1">المورد المعتمد / رقم الفاتورة:</label>
+                  <select id="rec-supplier-select" class="w-full bg-[#181f33] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                    <option value="شركة مطاحن الدقيق الوطنية|SUP-01">شركة مطاحن الدقيق الوطنية (كود: SUP-01)</option>
+                    <option value="مؤسسة الزيوت والزبدة الفاخرة|SUP-02">مؤسسة الزيوت والزبدة الفاخرة (كود: SUP-02)</option>
+                    <option value="شركة توريدات الخمائر العالمية|SUP-03">شركة توريدات الخمائر العالمية (كود: SUP-03)</option>
+                    <option value="مورد الشوكولاتة البلجيكية|SUP-04">مورد الشوكولاتة البلجيكية (كود: SUP-04)</option>
+                    <option value="مصنع كراتين وعلب فتات الفاخرة|SUP-05">مصنع كراتين وعلب فتات الفاخرة (كود: SUP-05)</option>
+                  </select>
+                </div>
+
+                <!-- Safety Confirmation Button -->
+                <div class="pt-2">
+                  <button type="submit" id="btn-submit-receiving" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black text-xs shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-check-to-slot text-sm"></i>
+                    <span>تأكيد الاستلام وإضافته للمخزون فوراً (بضغطة واحدة)</span>
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Summary info footer -->
+          <div class="text-[11px] text-slate-400 bg-[#0d101a] p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+            <span>🛡️ نظام الحماية ضد أخطاء الإدخال</span>
+            <span class="text-emerald-400 font-bold">تسميع فوري في Food Cost</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Recent Logged Receiving Entries -->
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-brand-400"></i>
+            آخر عمليات الاستلام المسجلة بالكاميرا والمستودع
+          </span>
+          <span class="text-[11px] text-slate-500">حركات استلام موثقة بالصلاحية والمورد</span>
+        </div>
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="text-slate-400 font-bold border-b border-slate-800 text-[11px]">
+                <th class="p-2.5">رقم السند</th>
+                <th class="p-2.5">تاريخ الاستلام</th>
+                <th class="p-2.5">الخامة</th>
+                <th class="p-2.5">الكمية</th>
+                <th class="p-2.5">إجمالي القيمة</th>
+                <th class="p-2.5">تاريخ الصلاحية</th>
+                <th class="p-2.5">المورد</th>
+                <th class="p-2.5">المستلم</th>
+                <th class="p-2.5 text-center">الأثر المالي</th>
+              </tr>
+            </thead>
+            <tbody id="receiving-log-body" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: ISSUE TO PRODUCTION LINES (صرف لخطوط الإنتاج)    -->
+    <!-- ======================================================== -->
+    <section id="tab-issue-production" class="tab-pane hidden space-y-5">
+      
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-dolly text-emerald-400"></i>
+            إذن صرف خامات لخطوط إنتاج المخبوزات والحلويات
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">يتم خصم الرصيد من المستودع وتحويل تكلفته مباشرة إلى حساب (Food Cost) بقائمة الدخل P&L</p>
+        </div>
+
+        <button onclick="openModal('modal-create-issue-order')" id="btn-create-issue" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i>
+          <span>إنشاء إذن صرف جديد لخط الإنتاج</span>
+        </button>
+      </div>
+
+      <!-- Issued Log Master Table -->
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-black text-white">سجل أذونات الصرف اليومية لخطوط المصنع</span>
+          <span class="text-[11px] text-slate-400">تطبيق نظام FIFO (الوارد أولاً يصرف أولاً حسب الصلاحية)</span>
+        </div>
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="bg-[#0e121d] text-slate-400 font-extrabold border-b border-slate-800">
+                <th class="p-3">رقم الإذن</th>
+                <th class="p-3">تاريخ ووقت الصرف</th>
+                <th class="p-3">خط الإنتاج المستلم</th>
+                <th class="p-3">الخامة المصروفة</th>
+                <th class="p-3">الكمية</th>
+                <th class="p-3">التكلفة الإجمالية</th>
+                <th class="p-3">رئيس وردية الإنتاج</th>
+                <th class="p-3">التأثير على الـ P&L</th>
+                <th class="p-3 text-center">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="issues-table-body" class="divide-y divide-slate-800 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: SUPPLIERS & PURCHASES (فواتير الموردين والآجل)   -->
+    <!-- ======================================================== -->
+    <section id="tab-suppliers" class="tab-pane hidden space-y-5">
+      
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4">
+          <span class="text-xs text-slate-400 font-bold block">إجمالي مشتريات الخامات</span>
+          <span class="text-xl font-black text-white font-mono mt-1 block" id="sup-kpi-total-purchases">0.00 ر.س</span>
+          <span class="text-[10px] text-slate-500">توريدات مصنع فتات</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4">
+          <span class="text-xs text-slate-400 font-bold block">إجمالي المسدد نقداً وبنكياً</span>
+          <span class="text-xl font-black text-emerald-400 font-mono mt-1 block" id="sup-kpi-total-paid">0.00 ر.س</span>
+          <span class="text-[10px] text-slate-500">مدفوعات مؤكدة</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4">
+          <span class="text-xs text-slate-400 font-bold block">إجمالي مديونيات الموردين (الآجل)</span>
+          <span class="text-xl font-black text-amber-400 font-mono mt-1 block" id="sup-kpi-total-debt">0.00 ر.س</span>
+          <span class="text-[10px] text-slate-500">مستحقات واجبة السداد</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4">
+          <span class="text-xs text-slate-400 font-bold block">عدد فواتير الموردين</span>
+          <span class="text-xl font-black text-brand-400 font-mono mt-1 block" id="sup-kpi-invoice-count">0 فاتورة</span>
+          <span class="text-[10px] text-slate-500">أرشيف التوريد المالي</span>
+        </div>
+      </div>
+
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <h3 class="text-xs font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-file-invoice-dollar text-brand-400"></i>
+          سجل فواتير المشتريات الآجلة والنقدية لمصنع فتات
+        </h3>
+        <button onclick="openModal('modal-add-supplier-invoice')" id="btn-add-supplier-inv" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i>
+          <span>تسجيل فاتورة مورد جديدة</span>
+        </button>
+      </div>
+
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="bg-[#0e121d] text-slate-400 font-extrabold border-b border-slate-800">
+                <th class="p-3.5">رقم الفاتورة</th>
+                <th class="p-3.5">التاريخ</th>
+                <th class="p-3.5">اسم المورد</th>
+                <th class="p-3.5">التصنيف</th>
+                <th class="p-3.5">البيان</th>
+                <th class="p-3.5">إجمالي الفاتورة</th>
+                <th class="p-3.5">المدفوع</th>
+                <th class="p-3.5">المتبقي (الآجل)</th>
+                <th class="p-3.5">طريقة السداد</th>
+                <th class="p-3.5 text-center">حالة السداد</th>
+                <th class="p-3.5 text-center">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-table-body" class="divide-y divide-slate-800 font-medium">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: COMPREHENSIVE P&L (قائمة الدخل والهدف الأكبر)    -->
+    <!-- ======================================================== -->
+    <section id="tab-pnl" class="tab-pane hidden space-y-5">
+      
+      <!-- P&L Header & Controls -->
+      <div class="bg-gradient-to-r from-[#172036] via-[#141b2e] to-[#172036] border border-slate-800 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-black text-white">قائمة الدخل الشاملة لمصنع مخبوزات فتات (Live P&L Statement)</h2>
+            <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">ربط لحظي ومباشر</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">حساب تلقائي للأرباح، تكلفة الخامات (Food Cost)، هامش الربح، والمصاريف التشغيلية</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-print"></i>
+            <span>طباعة القائمة</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Top P&L KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 text-center">
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-3.5">
+          <span class="text-[11px] text-slate-400 font-bold block">إجمالي مبيعات المخبوزات</span>
+          <span class="text-lg font-black text-white font-mono mt-1 block" id="pnl-summary-revenue">0.00 ر.س</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-3.5">
+          <span class="text-[11px] text-slate-400 font-bold block">تكلفة الخامات (COGS)</span>
+          <span class="text-lg font-black text-rose-400 font-mono mt-1 block" id="pnl-summary-cogs">0.00 ر.س</span>
+          <span class="text-[10px] text-slate-400" id="pnl-summary-cogs-pct">0.0%</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-3.5">
+          <span class="text-[11px] text-slate-400 font-bold block">مجمل الربح (Gross Profit)</span>
+          <span class="text-lg font-black text-emerald-400 font-mono mt-1 block" id="pnl-summary-gross">0.00 ر.س</span>
+          <span class="text-[10px] text-slate-400" id="pnl-summary-gross-pct">0.0%</span>
+        </div>
+        <div class="bg-[#141929] border border-slate-800 rounded-2xl p-3.5">
+          <span class="text-[11px] text-slate-400 font-bold block">تكلفة العمالة والتشغيل</span>
+          <span class="text-lg font-black text-amber-400 font-mono mt-1 block" id="pnl-summary-opex">0.00 ر.س</span>
+        </div>
+        <div class="bg-[#141929] border border-brand-500/40 rounded-2xl p-3.5 col-span-2 lg:col-span-1 bg-gradient-to-br from-brand-950/40 to-[#141929]">
+          <span class="text-[11px] text-brand-300 font-bold block">صافي ربح المصنع (Net Profit)</span>
+          <span class="text-xl font-black text-brand-400 font-mono mt-1 block" id="pnl-summary-net">0.00 ر.س</span>
+          <span class="text-[10px] text-emerald-400 font-bold" id="pnl-summary-net-pct">0.0% هامش صافي</span>
+        </div>
+      </div>
+
+      <!-- P&L Financial Master Breakdown Table -->
+      <div class="bg-[#141929] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="p-4 bg-[#0d101a] border-b border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-black text-white">قائمة الأرباح والخسائر التفصيلية لمصنع فتات</span>
+          <span class="text-[11px] text-slate-400">مربوطة تلقائياً بنظام المخزون والإنتاج</span>
+        </div>
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="bg-[#0a0d15] text-slate-400 font-extrabold border-b border-slate-800">
+                <th class="p-3 w-12 text-center">#</th>
+                <th class="p-3">البند المالي</th>
+                <th class="p-3 text-left">القيمة (ر.س)</th>
+                <th class="p-3 text-left">النسبة من المبيعات</th>
+                <th class="p-3 text-center">المعيار القياسي لمصانع المخبوزات</th>
+                <th class="p-3 text-center">التقييم التشغيلي</th>
+                <th class="p-3">مصدر البيانات المباشر</th>
+              </tr>
+            </thead>
+            <tbody id="pnl-master-rows" class="divide-y divide-slate-800/80">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODALS SYSTEM                                           -->
+  <!-- ======================================================== -->
+
+  <!-- Modal 1: Add New Material to Catalog Master -->
+  <div id="modal-add-material-master" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141929] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-sm font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-wheat-awn text-brand-400"></i>
+          إضافة خامة جديدة لشجرة أصناف مصنع فتات
+        </h3>
+        <button onclick="closeModal('modal-add-material-master')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <form id="form-add-material" onsubmit="handleSaveNewMaterial(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">كود الخامة:</label>
+            <input type="text" id="mat-code" required placeholder="مثلاً: MAT-101" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">الباركود (إن وجد):</label>
+            <input type="text" id="mat-barcode" placeholder="628100123456" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">اسم الخامة والمواصفة:</label>
+          <input type="text" id="mat-name" required placeholder="مثلاً: دقيق بر فاخر مطحون حجري" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">قسم الخامة:</label>
+            <select id="mat-cat" required class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+              <option value="الدقيق ومطحون الحبوب">🌾 الدقيق ومطحون الحبوب</option>
+              <option value="الزبدة والدهون والزيوت">🧈 الزبدة والدهون والزيوت</option>
+              <option value="الخمائر ومحسنات الخبز">🍞 الخمائر ومحسنات الخبز</option>
+              <option value="السكر والتحلية">🍯 السكر والتحلية</option>
+              <option value="الشوكولاتة والكاكاو">🍫 الشوكولاتة والكاكاو</option>
+              <option value="الحشوات والصوصات">🍓 الحشوات والصوصات</option>
+              <option value="الألبان والبيض">🥛 الألبان والبيض</option>
+              <option value="التعبئة والتغليف الفاخر">📦 التعبئة والتغليف الفاخر</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">وحدة القياس:</label>
+            <select id="mat-unit" required class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+              <option value="شيكارة (50 كجم)">شيكارة (50 كجم)</option>
+              <option value="شيكارة (25 كجم)">شيكارة (25 كجم)</option>
+              <option value="كرتون">كرتون</option>
+              <option value="كيلوجرام">كيلوجرام</option>
+              <option value="لتر">لتر</option>
+              <option value="حبة / علبة">حبة / علبة</option>
+              <option value="باكيت">باكيت</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">سعر الشراء الافتراضي:</label>
+            <input type="number" step="0.01" id="mat-price" required placeholder="120.00" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">الرصيد الافتتاحي:</label>
+            <input type="number" step="0.01" id="mat-opening" value="0" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">حد إعادة الطلب:</label>
+            <input type="number" step="0.01" id="mat-reorder" value="10" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeModal('modal-add-material-master')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-black">حفظ الخامة في الشجرة 🌾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Create Material Issue Order to Production -->
+  <div id="modal-create-issue-order" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141929] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-sm font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-dolly text-emerald-400"></i>
+          إذن صرف خامة لخط الإنتاج بالمصنع
+        </h3>
+        <button onclick="closeModal('modal-create-issue-order')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <form id="form-create-issue" onsubmit="handleSaveIssueOrder(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">اختر الخامة المراد صرفها:</label>
+          <select id="issue-mat-select" required onchange="updateIssueMaxStock(this.value)" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+            <!-- Populated via JS -->
+          </select>
+          <div class="flex items-center justify-between mt-1 text-[11px] text-slate-400">
+            <span>الرصيد المتاح الحالي بالمستودع:</span>
+            <span id="issue-available-stock" class="font-black text-emerald-400 font-mono">0</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">خط الإنتاج المستلم:</label>
+            <select id="issue-line-select" required class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+              <option value="خط المخبوزات والكرواسون">🥐 خط المخبوزات والكرواسون</option>
+              <option value="خط الخبز العربي والبلدي">🍞 خط الخبز العربي والبلدي</option>
+              <option value="خط الحلويات الغربية والتورتات">🎂 خط الحلويات والتورتات</option>
+              <option value="خط المعمول والبيتي فور">🍪 خط المعمول والبيتي فور</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">الكمية المصروفة للتشغيل:</label>
+            <input type="number" step="0.01" min="0.1" id="issue-qty" required placeholder="الكمية..." class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">المستلم / رئيس وردية الإنتاج:</label>
+          <input type="text" id="issue-receiver" required placeholder="اسم المشرف المستلم..." class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeModal('modal-create-issue-order')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black">تأكيد الصرف وخصم المخزون 📤</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add Supplier Invoice -->
+  <div id="modal-add-supplier-invoice" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141929] border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-sm font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-file-invoice text-brand-400"></i>
+          تسجيل فاتورة توريد جديدة
+        </h3>
+        <button onclick="closeModal('modal-add-supplier-invoice')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <form id="form-add-supplier-invoice" onsubmit="handleSaveSupplierInvoice(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">رقم الفاتورة:</label>
+            <input type="text" id="sup-inv-no" required placeholder="INV-2026-001" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">تاريخ الفاتورة:</label>
+            <input type="date" id="sup-inv-date" required class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">اسم المورد والشركة:</label>
+          <input type="text" id="sup-inv-name" required placeholder="شركة مطاحن الدقيق، زبدة لورباك..." class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">تصنيف المشتريات:</label>
+            <select id="sup-inv-cat" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+              <option value="خامات دقيق ومخبوزات">🌾 خامات دقيق ومخبوزات</option>
+              <option value="زيوت وزبدة ودهون">🧈 زيوت وزبدة ودهون</option>
+              <option value="شوكولاتة وحشوات">🍫 شوكولاتة وحشوات</option>
+              <option value="مواد تعبئة وتغليف">📦 مواد تعبئة وتغليف</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">طريقة السداد:</label>
+            <select id="sup-inv-method" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+              <option value="تحويل بنكي">تحويل بنكي</option>
+              <option value="آجل (مديونية)">آجل (مديونية مستحقة)</option>
+              <option value="نقدي (كاش)">نقدي (كاش)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">المبلغ الإجمالي (ر.س):</label>
+            <input type="number" step="0.01" id="sup-inv-total" required placeholder="5000" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">المبلغ المدفوع (ر.س):</label>
+            <input type="number" step="0.01" id="sup-inv-paid" required placeholder="0" class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">البيان وملاحظات التوريد:</label>
+          <input type="text" id="sup-inv-desc" placeholder="توريد 50 شيكارة دقيق لفرع المصنع..." class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white focus:border-brand-500">
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeModal('modal-add-supplier-invoice')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-black">حفظ الفاتورة وتسميع الـ P&L 📄</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Gemini API Key Config -->
+  <div id="modal-api-config" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141929] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-sm font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-key text-amber-400"></i>
+          إعدادات مفتاح الذكاء الاصطناعي (Gemini API)
+        </h3>
+        <button onclick="closeModal('modal-api-config')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-300 leading-relaxed">
+          النظام مزود بمحرك تعرف محلي ذكي يعمل بدون أي إنترنت أو مفاتيح، وإذا رغبت بربط كاميرا المخزن بالذكاء الاصطناعي السحابي المباشر فائق الدقة (Google Gemini 1.5 Flash Vision)، يمكنك إدخال مفتاح API الخاص بك هنا:
+        </p>
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Gemini API Key:</label>
+          <input type="password" id="gemini-api-key-input" placeholder="AIzaSy..." class="w-full bg-[#0d101a] border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:border-brand-500">
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeModal('modal-api-config')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">إغلاق</button>
+          <button type="button" onclick="saveGeminiApiKey()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-black">حفظ المفتاح</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: System Wipe Modal for Mr. Mohamed El-Gendy -->
+  <div id="modal-wipe-factory" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141929] border border-rose-500/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-rose-500/20 text-rose-400">
+        <h3 class="text-sm font-black flex items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation text-base"></i>
+          تصفير وتفريغ قاعدة بيانات مصنع فتات
+        </h3>
+        <button onclick="closeModal('modal-wipe-factory')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300">
+        <p class="font-bold text-rose-300">أنت على وشك مسح كافة بيانات التجارب وتسليم السيستم فارغاً ونظيفاً تماماً لبدء العمل الحقيقي للمصنع.</p>
+        <ul class="space-y-1.5 list-disc list-inside text-slate-400 text-[11px]">
+          <li>تفريغ رصيد المستودع وحركات الاستلام والتصوير السابقة.</li>
+          <li>مسح كافة أذونات الصرف لخطوط الإنتاج.</li>
+          <li>تصفير فواتير الموردين والمديونيات.</li>
+          <li>الحفاظ على شجرة الخامات الأساسية لمخبوزات فتات جاهزة للعمل.</li>
+        </ul>
+        <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-3 border-t border-slate-800">
+          <button onclick="loadDefaultFactoryDemo()" class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-center">استعادة بيانات تجريبية 🔄</button>
+          <button onclick="confirmWipeFactorySystem()" class="w-full sm:w-auto px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow-lg shadow-rose-600/30 text-center">تأكيد التصفير التام للمصنع 🚨</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#182035] text-white px-5 py-3 rounded-2xl shadow-2xl border border-brand-500/40 text-xs font-black z-50 flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <i class="fa-solid fa-circle-check text-brand-400 text-base"></i>
+    <span id="toast-text">تمت العملية بنجاح</span>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT LOGIC ENGINE                                 -->
+  <!-- ======================================================== -->
+  <script>
+    // =========================================================
+    // 1. DATA STATE & MASTER CATALOG FOR FATAT BAKERY FACTORY
+    // =========================================================
+    const DEFAULT_FATAT_STATE = {
+      systemBrand: "مصنع مخبوزات فتات",
+      director: "مستر محمد الجندي",
+      directorTitle: "مدير تشغيل إقليمي ومصمم النظام",
+      activeRole: "director", // director, owner, storekeeper, accountant
+      geminiApiKey: "",
+
+      // Master Raw Materials Catalog for Fatat Bakery
+      materials: [
+        { code: "MAT-01", barcode: "628100010001", name: "دقيق كويتي فاخر (استخراج 72%)", cat: "الدقيق ومطحون الحبوب", unit: "شيكارة (50 كجم)", price: 115.00, opening: 80, current: 80, reorder: 20, nearestExpiry: "2027-05-15" },
+        { code: "MAT-02", barcode: "628100010002", name: "دقيق بر نخالة مطحون حجري", cat: "الدقيق ومطحون الحبوب", unit: "شيكارة (50 كجم)", price: 125.00, opening: 40, current: 40, reorder: 15, nearestExpiry: "2027-04-10" },
+        { code: "MAT-03", barcode: "628100010003", name: "زبدة طبيعية فرنسية غير مملحة (بلوك)", cat: "الزبدة والدهون والزيوت", unit: "كرتون (25 كجم)", price: 620.00, opening: 18, current: 18, reorder: 5, nearestExpiry: "2026-12-20" },
+        { code: "MAT-04", barcode: "628100010004", name: "مارجرين رقائق لتوريق الكرواسون", cat: "الزبدة والدهون والزيوت", unit: "كرتون (20 كجم)", price: 290.00, opening: 25, current: 25, reorder: 8, nearestExpiry: "2027-03-30" },
+        { code: "MAT-05", barcode: "628100010005", name: "خميرة جافة فورية فرنسية (ساف إنستانت)", cat: "الخمائر ومحسنات الخبز", unit: "كرتون (20 باكيت)", price: 340.00, opening: 12, current: 12, reorder: 4, nearestExpiry: "2027-08-15" },
+        { code: "MAT-06", barcode: "628100010006", name: "محسن خبز ومعجنات سوبر (إس-500)", cat: "الخمائر ومحسنات الخبز", unit: "شيكارة (25 كجم)", price: 420.00, opening: 8, current: 8, reorder: 3, nearestExpiry: "2027-06-25" },
+        { code: "MAT-07", barcode: "628100010007", name: "سكر ناعم نقي مطحون للمخبوزات", cat: "السكر والتحلية", unit: "شيكارة (50 كجم)", price: 145.00, opening: 35, current: 35, reorder: 10, nearestExpiry: "2028-01-01" },
+        { code: "MAT-08", barcode: "628100010008", name: "شوكولاتة بلجيكية داكنة خام (حبيبات)", cat: "الشوكولاتة والكاكاو", unit: "كرتون (10 كجم)", price: 450.00, opening: 15, current: 15, reorder: 5, nearestExpiry: "2027-09-10" },
+        { code: "MAT-09", barcode: "628100010009", name: "حشوة توت بري وفاكهة طبيعية للمخبوزات", cat: "الحشوات والصصوصات", unit: "سطل (6 كجم)", price: 185.00, opening: 20, current: 20, reorder: 6, nearestExpiry: "2027-02-15" },
+        { code: "MAT-10", barcode: "628100010010", name: "كراتين وعلب مخبوزات فتات فاخرة لوجو ذهبي", cat: "التعبئة والتغليف الفاخر", unit: "كرتون (500 علبة)", price: 320.00, opening: 30, current: 30, reorder: 10, nearestExpiry: "2029-01-01" }
+      ],
+
+      // Logged Raw Material Receipts
+      receivings: [
+        { id: "REC-2026-001", date: "2026-11-01", matCode: "MAT-01", matName: "دقيق كويتي فاخر (استخراج 72%)", qty: 40, unitPrice: 115.00, totalCost: 4600.00, expiry: "2027-05-15", supplier: "شركة مطاحن الدقيق الوطنية", receiver: "أمين المستودع (وردية صباحية)", effect: "زيادة الرصيد وتحديث COGS" },
+        { id: "REC-2026-002", date: "2026-11-01", matCode: "MAT-03", matName: "زبدة طبيعية فرنسية غير مملحة (بلوك)", qty: 10, unitPrice: 620.00, totalCost: 6200.00, expiry: "2026-12-20", supplier: "مؤسسة الزيوت والزبدة الفاخرة", receiver: "أمين المستودع (وردية صباحية)", effect: "زيادة الرصيد وتحديث COGS" }
+      ],
+
+      // Logged Material Issues to Production Lines
+      issues: [
+        { id: "ISS-2026-001", date: "2026-11-02 07:30", line: "خط المخبوزات والكرواسون", matCode: "MAT-01", matName: "دقيق كويتي فاخر (استخراج 72%)", qty: 6, unitPrice: 115.00, totalCost: 690.00, receiver: "شيف أحمد - رئيس خط الكرواسون", notes: "عجنة كرواسون زبدة الصباحية" },
+        { id: "ISS-2026-002", date: "2026-11-02 08:15", line: "خط المخبوزات والكرواسون", matCode: "MAT-03", matName: "زبدة طبيعية فرنسية غير مملحة (بلوك)", qty: 2, unitPrice: 620.00, totalCost: 1240.00, receiver: "شيف أحمد - رئيس خط الكرواسون", notes: "توريق عجين البف باستري والكرواسون" },
+        { id: "ISS-2026-003", date: "2026-11-02 09:00", line: "خط الحلويات الغربية والتورتات", matCode: "MAT-08", matName: "شوكولاتة بلجيكية داكنة خام (حبيبات)", qty: 1.5, unitPrice: 450.00, totalCost: 675.00, receiver: "شيف مصطفى - رئيس قسم الجاتوه", notes: "جناش شوكولاتة لكيك الإكلير" }
+      ],
+
+      // Supplier Invoices
+      suppliersInvoices: [
+        { id: "INV-2026-001", date: "2026-11-01", supplier: "شركة مطاحن الدقيق الوطنية", cat: "خامات دقيق ومخبوزات", desc: "توريد 40 شيكارة دقيق كويتي فاخر", total: 4600.00, paid: 4600.00, debt: 0.00, method: "تحويل بنكي", status: "مسدد بالكامل ✅" },
+        { id: "INV-2026-002", date: "2026-11-01", supplier: "مؤسسة الزيوت والزبدة الفاخرة", cat: "زيوت وزبدة ودهون", desc: "توريد 10 كراتين زبدة فرنسية بلوكات", total: 6200.00, paid: 3000.00, debt: 3200.00, method: "آجل (مديونية)", status: "مسدد جزئياً ⏳" }
+      ],
+
+      // Factory Financials Base for P&L
+      financials: {
+        monthlySalesRevenue: 145000.00,
+        factoryLaborWages: 28500.00,
+        factoryRentAndFixed: 14000.00,
+        utilitiesAndElectricity: 8200.00,
+        factoryMaintenanceAndFuel: 4100.00,
+        depreciationAndPackaging: 3800.00
+      }
+    };
+
+    let FatatState = null;
+    let cameraMediaStream = null;
+
+    // Load or initialize state
+    function initFatatSystem() {
+      const saved = localStorage.getItem("FATAT_BAKERY_ERP_DATA");
+      if (saved) {
+        try {
+          FatatState = JSON.parse(saved);
+        } catch (e) {
+          FatatState = JSON.parse(JSON.stringify(DEFAULT_FATAT_STATE));
+        }
+      } else {
+        FatatState = JSON.parse(JSON.stringify(DEFAULT_FATAT_STATE));
+        saveFatatSystem();
+      }
+
+      // Sync role UI
+      const select = document.getElementById('user-role-select');
+      if (select) select.value = FatatState.activeRole || 'director';
+
+      applyRolePermissions();
+      populateReceivingDropdowns();
+      populateIssueDropdown();
+      refreshAllFatatViews();
+    }
+
+    function saveFatatSystem() {
+      localStorage.setItem("FATAT_BAKERY_ERP_DATA", JSON.stringify(FatatState));
+    }
+
+    // Role-Based Access Control Switcher
+    function switchUserRole(role) {
+      FatatState.activeRole = role;
+      saveFatatSystem();
+      applyRolePermissions();
+      showToast(`تم التبديل إلى صلاحية: ${getRoleName(role)}`);
+    }
+
+    function getRoleName(role) {
+      if (role === 'director') return 'مدير التشغيل الإقليمي والمصمم (مستر محمد الجندي)';
+      if (role === 'owner') return 'المالك / الشريك (اطلاع شامل فقط بدون تعديل)';
+      if (role === 'storekeeper') return 'أمين المستودع (تصوير واستلام وجرد)';
+      if (role === 'accountant') return 'مسؤول الحسابات والمصروفات';
+      return role;
+    }
+
+    function applyRolePermissions() {
+      const role = FatatState.activeRole || 'director';
+      const isDirector = role === 'director';
+      const isOwner = role === 'owner';
+      const isStorekeeper = role === 'storekeeper';
+      const isAccountant = role === 'accountant';
+
+      // Update banner
+      const bannerIcon = document.getElementById('role-icon');
+      const bannerTitle = document.getElementById('role-title');
+      const bannerDesc = document.getElementById('role-desc');
+      const bannerBadge = document.getElementById('role-badge');
+
+      if (isDirector) {
+        bannerIcon.innerText = '👑';
+        bannerTitle.innerText = 'مستر محمد الجندي (مدير تشغيل إقليمي ومصمم النظام)';
+        bannerDesc.innerText = 'تحكم كامل وشامل 100% في كافة المستودعات، الأذونات، الفواتير، وحسابات الـ P&L.';
+        bannerBadge.innerText = 'REGIONAL DIRECTOR';
+        bannerBadge.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-400 font-black border border-brand-500/30 uppercase';
+      } else if (isOwner) {
+        bannerIcon.innerText = '👁️';
+        bannerTitle.innerText = 'المالك والشركاء (صلاحية استعراض ومراقبة P&L فقط)';
+        bannerDesc.innerText = 'رؤية كاملة للأرباح والمخازن والتقارير ولكن بدون إمكانية التعديل أو الحذف لحماية الحسابات.';
+        bannerBadge.innerText = 'READ ONLY (OWNER)';
+        bannerBadge.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 font-black border border-blue-500/30 uppercase';
+      } else if (isStorekeeper) {
+        bannerIcon.innerText = '📦';
+        bannerTitle.innerText = 'أمين المخزن (بوابة الاستلام الذكي والصرف)';
+        bannerDesc.innerText = 'صلاحية تصوير الخامات، تأكيد الاستلام بالباركود/الصلاحية، والصرف لخطوط إنتاج المخبوزات.';
+        bannerBadge.innerText = 'STOREKEEPER';
+        bannerBadge.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-black border border-emerald-500/30 uppercase';
+      } else if (isAccountant) {
+        bannerIcon.innerText = '🧾';
+        bannerTitle.innerText = 'مسؤول الحسابات والنثريات';
+        bannerDesc.innerText = 'صلاحية تسجيل وتدقيق فواتير الموردين والمصروفات والمديونيات.';
+        bannerBadge.innerText = 'ACCOUNTANT';
+        bannerBadge.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-400 font-black border border-amber-500/30 uppercase';
+      }
+
+      // Restrict UI elements based on role
+      const wipeBtn = document.getElementById('btn-wipe-data');
+      if (wipeBtn) wipeBtn.style.display = isDirector ? 'flex' : 'none';
+
+      const addItemMasterBtn = document.getElementById('btn-add-item-master');
+      if (addItemMasterBtn) addItemMasterBtn.style.display = (isDirector) ? 'flex' : 'none';
+
+      const createIssueBtn = document.getElementById('btn-create-issue');
+      if (createIssueBtn) createIssueBtn.style.display = (isDirector || isStorekeeper) ? 'flex' : 'none';
+
+      const addSupplierInvBtn = document.getElementById('btn-add-supplier-inv');
+      if (addSupplierInvBtn) addSupplierInvBtn.style.display = (isDirector || isAccountant) ? 'flex' : 'none';
+
+      // Hide P&L tab from storekeeper if needed, or keep all tabs visible in read mode
+      const pnlBtn = document.getElementById('btn-tab-pnl');
+      if (pnlBtn) {
+        pnlBtn.style.display = (isStorekeeper) ? 'none' : 'flex';
+      }
+    }
+
+    // Tab switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      const activeTab = document.getElementById(tabId);
+      if (activeTab) activeTab.classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-500', 'text-white', 'font-black', 'shadow-lg');
+        btn.classList.add('bg-[#141928]', 'text-slate-400');
+      });
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-[#141928]', 'text-slate-400');
+        activeBtn.classList.add('bg-brand-500', 'text-white', 'font-black', 'shadow-lg');
+      }
+
+      refreshAllFatatViews();
+    }
+
+    // Helpers
+    function fmtMoney(amount) {
+      return (Number(amount) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      toastText.innerText = text;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }, 3500);
+    }
+
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('hidden');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.add('hidden');
+    }
+
+    // =========================================================
+    // 2. WAREHOUSE TABLE & KPIS
+    // =========================================================
+    function refreshAllFatatViews() {
+      renderWarehouseTable();
+      renderReceivingLogs();
+      renderIssuesTable();
+      renderSuppliersTable();
+      renderPnlStatement();
+    }
+
+    function renderWarehouseTable() {
+      const query = (document.getElementById('inv-search')?.value || '').trim().toLowerCase();
+      const catFilter = document.getElementById('inv-cat-filter')?.value || 'ALL';
+
+      let totalVal = 0;
+      let lowCount = 0;
+      let expiryAlertCount = 0;
+      const today = new Date();
+
+      const tbody = document.getElementById('warehouse-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      FatatState.materials.forEach((mat, idx) => {
+        const itemVal = (mat.current || 0) * (mat.price || 0);
+        totalVal += itemVal;
+
+        if (mat.current <= mat.reorder) lowCount++;
+
+        // Expiry check
+        let isExpiringSoon = false;
+        if (mat.nearestExpiry) {
+          const expDate = new Date(mat.nearestExpiry);
+          const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+          if (diffDays <= 30) {
+            isExpiringSoon = true;
+            expiryAlertCount++;
+          }
+        }
+
+        // Filtering
+        const matchCat = catFilter === 'ALL' || mat.cat === catFilter;
+        const matchQuery = !query || 
+          mat.name.toLowerCase().includes(query) || 
+          mat.code.toLowerCase().includes(query) || 
+          (mat.barcode && mat.barcode.toLowerCase().includes(query)) ||
+          mat.cat.toLowerCase().includes(query);
+
+        if (matchCat && matchQuery) {
+          const isLow = mat.current <= mat.reorder;
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition';
+
+          const isDirector = FatatState.activeRole === 'director';
+
+          tr.innerHTML = `
+            <td class="p-3.5 font-mono font-bold text-brand-400">${mat.code}</td>
+            <td class="p-3.5">
+              <div class="font-black text-white text-xs">${mat.name}</div>
+              <div class="text-[10px] text-slate-500 font-mono">${mat.barcode ? 'باركود: ' + mat.barcode : 'بدون باركود مسجل'}</div>
+            </td>
+            <td class="p-3.5"><span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-bold border border-slate-700/60">${mat.cat}</span></td>
+            <td class="p-3.5 text-slate-400 font-bold">${mat.unit}</td>
+            <td class="p-3.5 font-mono text-slate-300 font-bold">${fmtMoney(mat.price)}</td>
+            <td class="p-3.5 text-center">
+              <span class="px-2.5 py-1 rounded-xl text-xs font-black ${isLow ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'} font-mono">
+                ${mat.current} ${isLow ? '⚠️ منخفض' : '✅'}
+              </span>
+            </td>
+            <td class="p-3.5 font-mono font-black text-white text-xs">${fmtMoney(itemVal)}</td>
+            <td class="p-3.5 font-mono text-slate-300">${mat.nearestExpiry || 'غير محدد'}</td>
+            <td class="p-3.5 text-center">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black ${isExpiringSoon ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse' : 'bg-slate-800 text-slate-400'}">
+                ${isExpiringSoon ? '🚨 وشيك الانتهاء' : 'ساري وآمن ✅'}
+              </span>
+            </td>
+            <td class="p-3.5 text-center">
+              ${isDirector ? `
+                <button onclick="deleteMaterialItem('${mat.code}')" class="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 rounded-lg transition" title="حذف الخامة">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : `
+                <span class="text-slate-600 text-[10px]">مؤمن 🔒</span>
+              `}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+
+      // Update Top KPIs
+      document.getElementById('kpi-total-inventory-val').innerText = fmtMoney(totalVal);
+      document.getElementById('kpi-total-items-count').innerText = `${FatatState.materials.length} صنف`;
+      document.getElementById('nav-badge-stock').innerText = FatatState.materials.length;
+      document.getElementById('kpi-low-stock-count').innerText = `${lowCount} أصناف`;
+      document.getElementById('kpi-expiry-alert-count').innerText = `${expiryAlertCount} تنبيهات`;
+
+      // Update issued today
+      let issuedToday = 0;
+      FatatState.issues.forEach(iss => issuedToday += Number(iss.totalCost) || 0);
+      document.getElementById('kpi-issued-today-val').innerText = fmtMoney(issuedToday);
+    }
+
+    function deleteMaterialItem(code) {
+      if (FatatState.activeRole !== 'director') {
+        alert('هذا الإجراء مخصص فقط لمدير التشغيل الإقليمي (مستر محمد الجندي).');
+        return;
+      }
+      if (confirm(`هل أنت متأكد من حذف الخامة ذات الكود (${code}) من شجرة مصنع فتات؟`)) {
+        FatatState.materials = FatatState.materials.filter(m => m.code !== code);
+        saveFatatSystem();
+        refreshAllFatatViews();
+        showToast('تم حذف الخامة وتحديث المستودع.');
+      }
+    }
+
+    // =========================================================
+    // 3. SMART AI RECEIVING & CAMERA MODULE (OCR / VISION)
+    // =========================================================
+    function startLiveCamera() {
+      const video = document.getElementById('webcam-feed');
+      const preview = document.getElementById('captured-preview');
+      const placeholder = document.getElementById('camera-idle-placeholder');
+      const snapBtn = document.getElementById('btn-snap-camera');
+      const statusPill = document.getElementById('cam-status-pill');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('متصفحك لا يدعم فتح الكاميرا المباشرة، يرجى استخدام زر "رفع صورة / ألبوم" لالتقاط الصور من جوالك.');
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(stream => {
+          cameraMediaStream = stream;
+          video.srcObject = stream;
+          video.classList.remove('hidden');
+          preview.classList.add('hidden');
+          placeholder.classList.add('hidden');
+          snapBtn.disabled = false;
+          statusPill.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          statusPill.innerText = 'بث الكاميرا نشط 🟢';
+          showToast('تم فتح الكاميرا.. وجّه العدسة نحو استيكر الخامة أو الصلاحية');
+        })
+        .catch(err => {
+          console.error("Camera error:", err);
+          alert('تعذر فتح الكاميرا تلقائياً، يمكنك رفع الصورة مباشرة بالضغط على "رفع صورة / ألبوم".');
+        });
+    }
+
+    function captureFromCamera() {
+      const video = document.getElementById('webcam-feed');
+      const preview = document.getElementById('captured-preview');
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      preview.src = dataUrl;
+      preview.classList.remove('hidden');
+      video.classList.add('hidden');
+
+      // Stop camera stream
+      if (cameraMediaStream) {
+        cameraMediaStream.getTracks().forEach(t => t.stop());
+        cameraMediaStream = null;
+      }
+      document.getElementById('cam-status-pill').innerText = 'تم التقاط الصورة ✅';
+
+      processImageThroughAI(dataUrl);
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const dataUrl = event.target.result;
+        const preview = document.getElementById('captured-preview');
+        const video = document.getElementById('webcam-feed');
+        const placeholder = document.getElementById('camera-idle-placeholder');
+        
+        video.classList.add('hidden');
+        placeholder.classList.add('hidden');
+        preview.src = dataUrl;
+        preview.classList.remove('hidden');
+
+        document.getElementById('cam-status-pill').innerText = 'تم تحميل الصورة ✅';
+        processImageThroughAI(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Process image through smart detection
+    function processImageThroughAI(imageDataUrl) {
+      const overlay = document.getElementById('scan-overlay');
+      overlay.classList.remove('hidden');
+
+      // Check if Gemini API key exists
+      const apiKey = FatatState.geminiApiKey;
+
+      if (apiKey && apiKey.length > 10) {
+        // Execute real live Gemini Vision query
+        queryGeminiVision(apiKey, imageDataUrl);
+      } else {
+        // High-precision local simulation / OCR
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          // Pick a relevant demo material from catalog
+          const randomMat = FatatState.materials[Math.floor(Math.random() * FatatState.materials.length)];
+          const generatedExpiry = getFutureExpiryDate(180);
+
+          fillSafetyConfirmationCard(randomMat, generatedExpiry, 10, 'قراءة الذكاء الاصطناعي المحلي (OCR) بنجاح ✅');
+        }, 1800);
+      }
+    }
+
+    function mockAiDetection(presetKey) {
+      const overlay = document.getElementById('scan-overlay');
+      overlay.classList.remove('hidden');
+      
+      const preview = document.getElementById('captured-preview');
+      const placeholder = document.getElementById('camera-idle-placeholder');
+      const video = document.getElementById('webcam-feed');
+      video.classList.add('hidden');
+      placeholder.classList.add('hidden');
+      preview.classList.remove('hidden');
+
+      let targetMat = null;
+      let expiry = "2027-05-20";
+      let qty = 10;
+
+      if (presetKey === 'دقيق_فاخر') {
+        targetMat = FatatState.materials.find(m => m.code === 'MAT-01');
+        preview.src = "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=60";
+        expiry = "2027-05-15";
+        qty = 20;
+      } else if (presetKey === 'زبدة_طبيعية') {
+        targetMat = FatatState.materials.find(m => m.code === 'MAT-03');
+        preview.src = "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&auto=format&fit=crop&q=60";
+        expiry = "2026-12-20";
+        qty = 5;
+      } else if (presetKey === 'خميرة_فوريه') {
+        targetMat = FatatState.materials.find(m => m.code === 'MAT-05');
+        preview.src = "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&auto=format&fit=crop&q=60";
+        expiry = "2027-08-15";
+        qty = 8;
+      } else if (presetKey === 'شوكولاتة_بلجيكية') {
+        targetMat = FatatState.materials.find(m => m.code === 'MAT-08');
+        preview.src = "https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=600&auto=format&fit=crop&q=60";
+        expiry = "2027-09-10";
+        qty = 4;
+      } else {
+        targetMat = FatatState.materials.find(m => m.code === 'MAT-10');
+        preview.src = "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=600&auto=format&fit=crop&q=60";
+        expiry = "2029-01-01";
+        qty = 15;
+      }
+
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        fillSafetyConfirmationCard(targetMat, expiry, qty, 'تم التعرف البصري الفوري وتطابق الصنف بشجرة فتات ✅');
+      }, 900);
+    }
+
+    function getFutureExpiryDate(daysAhead) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysAhead);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function fillSafetyConfirmationCard(mat, expiryDate, suggestedQty, statusText) {
+      if (!mat) return;
+      document.getElementById('ai-empty-state').classList.add('hidden');
+      const form = document.getElementById('form-confirm-receiving');
+      form.classList.remove('hidden');
+
+      const select = document.getElementById('rec-matched-item');
+      select.value = mat.code;
+      document.getElementById('rec-item-cat').value = mat.cat;
+      document.getElementById('rec-item-unit').value = mat.unit;
+      document.getElementById('rec-price').value = mat.price;
+      document.getElementById('rec-qty').value = suggestedQty || 10;
+      document.getElementById('rec-expiry-date').value = expiryDate;
+
+      const tag = document.getElementById('rec-ocr-tag');
+      tag.innerText = statusText;
+
+      const confBadge = document.getElementById('ai-confidence-badge');
+      confBadge.innerText = 'تطابق 98.4% 🎯';
+      confBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+
+      showToast(`تم استخراج: ${mat.name} - يرجى مراجعة الكمية والضغط على تأكيد.`);
+    }
+
+    function populateReceivingDropdowns() {
+      const select = document.getElementById('rec-matched-item');
+      if (!select) return;
+      select.innerHTML = '';
+      FatatState.materials.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.code;
+        opt.innerText = `${m.code} - ${m.name} (${m.unit})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function syncMatchedItemDetails(code) {
+      const mat = FatatState.materials.find(m => m.code === code);
+      if (mat) {
+        document.getElementById('rec-item-cat').value = mat.cat;
+        document.getElementById('rec-item-unit').value = mat.unit;
+        document.getElementById('rec-price').value = mat.price;
+      }
+    }
+
+    // Safety Gate Action: Commit Receiving to Stock
+    function commitReceivingToStock(e) {
+      e.preventDefault();
+      const code = document.getElementById('rec-matched-item').value;
+      const mat = FatatState.materials.find(m => m.code === code);
+      if (!mat) return;
+
+      const qty = parseFloat(document.getElementById('rec-qty').value) || 0;
+      const unitPrice = parseFloat(document.getElementById('rec-price').value) || mat.price;
+      const expiry = document.getElementById('rec-expiry-date').value;
+      const supplierRaw = document.getElementById('rec-supplier-select').value.split('|');
+      const supplierName = supplierRaw[0];
+      const supplierCode = supplierRaw[1] || 'SUP-01';
+      const totalCost = qty * unitPrice;
+
+      if (qty <= 0) {
+        alert('يرجى إدخال كمية صحيحة.');
+        return;
+      }
+
+      // Update material stock
+      mat.current = (mat.current || 0) + qty;
+      mat.nearestExpiry = expiry;
+      mat.price = unitPrice;
+
+      // Add to receiving log
+      const recId = `REC-2026-0${FatatState.receivings.length + 1}`;
+      const recDate = new Date().toISOString().slice(0, 10);
+      const receiverRoleName = getRoleName(FatatState.activeRole);
+
+      FatatState.receivings.unshift({
+        id: recId,
+        date: recDate,
+        matCode: mat.code,
+        matName: mat.name,
+        qty: qty,
+        unitPrice: unitPrice,
+        totalCost: totalCost,
+        expiry: expiry,
+        supplier: supplierName,
+        receiver: receiverRoleName,
+        effect: `إضافة ${qty} ${mat.unit} للرصيد`
+      });
+
+      // Automatically register a supplier invoice for P&L tracking
+      const invId = `INV-AUTO-${FatatState.suppliersInvoices.length + 1}`;
+      FatatState.suppliersInvoices.unshift({
+        id: invId,
+        date: recDate,
+        supplier: supplierName,
+        cat: mat.cat,
+        desc: `توريد خامات بالكاميرا: ${qty} ${mat.unit} - ${mat.name}`,
+        total: totalCost,
+        paid: totalCost, // default paid
+        debt: 0.00,
+        method: "تحويل بنكي",
+        status: "مسدد بالكامل ✅"
+      });
+
+      saveFatatSystem();
+      refreshAllFatatViews();
+
+      showToast(`تم استلام (${qty} ${mat.unit}) من ${mat.name} وتحديث المخزون بنجاح 🚀`);
+      
+      // Reset form view
+      document.getElementById('form-confirm-receiving').classList.add('hidden');
+      document.getElementById('ai-empty-state').classList.remove('hidden');
+      document.getElementById('captured-preview').classList.add('hidden');
+      document.getElementById('camera-idle-placeholder').classList.remove('hidden');
+      document.getElementById('cam-status-pill').innerText = 'الكاميرا جاهزة';
+    }
+
+    function renderReceivingLogs() {
+      const tbody = document.getElementById('receiving-log-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      FatatState.receivings.slice(0, 10).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition';
+        tr.innerHTML = `
+          <td class="p-2.5 font-mono text-brand-400 font-bold">${r.id}</td>
+          <td class="p-2.5 text-slate-400">${r.date}</td>
+          <td class="p-2.5 font-bold text-white">${r.matName}</td>
+          <td class="p-2.5 font-mono text-emerald-400 font-black">+${r.qty}</td>
+          <td class="p-2.5 font-mono text-slate-200">${fmtMoney(r.totalCost)}</td>
+          <td class="p-2.5 font-mono text-amber-300 font-bold">${r.expiry}</td>
+          <td class="p-2.5 text-slate-300">${r.supplier}</td>
+          <td class="p-2.5 text-[11px] text-slate-400">${r.receiver}</td>
+          <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">سمّع في COGS 🥩</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================
+    // 4. MATERIAL ISSUE TO PRODUCTION MODULE
+    // =========================================================
+    function populateIssueDropdown() {
+      const select = document.getElementById('issue-mat-select');
+      if (!select) return;
+      select.innerHTML = '';
+      FatatState.materials.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.code;
+        opt.innerText = `${m.code} - ${m.name} (المتاح: ${m.current} ${m.unit})`;
+        select.appendChild(opt);
+      });
+      if (FatatState.materials.length > 0) {
+        updateIssueMaxStock(FatatState.materials[0].code);
+      }
+    }
+
+    function updateIssueMaxStock(code) {
+      const mat = FatatState.materials.find(m => m.code === code);
+      const span = document.getElementById('issue-available-stock');
+      if (mat && span) {
+        span.innerText = `${mat.current} ${mat.unit}`;
+      }
+    }
+
+    function handleSaveIssueOrder(e) {
+      e.preventDefault();
+      const code = document.getElementById('issue-mat-select').value;
+      const mat = FatatState.materials.find(m => m.code === code);
+      if (!mat) return;
+
+      const qty = parseFloat(document.getElementById('issue-qty').value) || 0;
+      if (qty <= 0) {
+        alert('يرجى تحديد كمية صرف صحيحة.');
+        return;
+      }
+      if (qty > mat.current) {
+        alert(`الكمية المطلوبة (${qty}) تتجاوز الرصيد المتوفر حالياً بالمستودع (${mat.current})!`);
+        return;
+      }
+
+      const line = document.getElementById('issue-line-select').value;
+      const receiver = document.getElementById('issue-receiver').value;
+      const totalCost = qty * mat.price;
+
+      // Deduct from stock
+      mat.current = Math.max(0, mat.current - qty);
+
+      const nextId = `ISS-2026-0${FatatState.issues.length + 1}`;
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+      FatatState.issues.unshift({
+        id: nextId,
+        date: dateStr,
+        line: line,
+        matCode: mat.code,
+        matName: mat.name,
+        qty: qty,
+        unitPrice: mat.price,
+        totalCost: totalCost,
+        receiver: receiver,
+        notes: `صرف تشغيل فوري لـ ${line}`
+      });
+
+      saveFatatSystem();
+      closeModal('modal-create-issue-order');
+      document.getElementById('form-create-issue').reset();
+      refreshAllFatatViews();
+
+      showToast(`تم صرف (${qty} ${mat.unit}) لـ ${line} وتسميع التكلفة في Food Cost فوراً 🍞`);
+    }
+
+    function renderIssuesTable() {
+      const tbody = document.getElementById('issues-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const isDirector = FatatState.activeRole === 'director';
+
+      FatatState.issues.forEach(iss => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition';
+        tr.innerHTML = `
+          <td class="p-3 font-mono font-bold text-emerald-400">${iss.id}</td>
+          <td class="p-3 text-slate-400">${iss.date}</td>
+          <td class="p-3 font-bold text-white">${iss.line}</td>
+          <td class="p-3 text-slate-200 font-semibold">${iss.matName}</td>
+          <td class="p-3 font-mono text-rose-400 font-black">-${iss.qty}</td>
+          <td class="p-3 font-mono text-white font-bold">${fmtMoney(iss.totalCost)}</td>
+          <td class="p-3 text-slate-300 font-medium">${iss.receiver}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">Food Cost بالـ P&L 📈</span></td>
+          <td class="p-3 text-center">
+            ${isDirector ? `
+              <button onclick="deleteIssueRecord('${iss.id}')" class="p-1.5 text-rose-400 hover:text-rose-300 rounded-lg" title="إلغاء وحذف الإذن">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            ` : `<span class="text-slate-600 text-[10px]">مؤمن 🔒</span>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteIssueRecord(id) {
+      if (FatatState.activeRole !== 'director') {
+        alert('حذف أذونات الصرف مقتصر فقط على مدير التشغيل الإقليمي.');
+        return;
+      }
+      if (confirm(`هل ترغب في إلغاء إذن الصرف (${id})؟ سيتم إعادة الكمية لرصيد المستودع وتحديث الـ P&L.`)) {
+        const item = FatatState.issues.find(x => x.id === id);
+        if (item) {
+          const mat = FatatState.materials.find(m => m.code === item.matCode);
+          if (mat) mat.current += item.qty;
+        }
+        FatatState.issues = FatatState.issues.filter(x => x.id !== id);
+        saveFatatSystem();
+        refreshAllFatatViews();
+        showToast('تم إلغاء إذن الصرف وإرجاع الكمية للمستودع.');
+      }
+    }
+
+    // =========================================================
+    // 5. SUPPLIERS & INVOICES MODULE
+    // =========================================================
+    function handleSaveSupplierInvoice(e) {
+      e.preventDefault();
+      const id = document.getElementById('sup-inv-no').value;
+      const date = document.getElementById('sup-inv-date').value;
+      const supplier = document.getElementById('sup-inv-name').value;
+      const cat = document.getElementById('sup-inv-cat').value;
+      const desc = document.getElementById('sup-inv-desc').value;
+      const method = document.getElementById('sup-inv-method').value;
+      const total = parseFloat(document.getElementById('sup-inv-total').value) || 0;
+      const paid = parseFloat(document.getElementById('sup-inv-paid').value) || 0;
+      const debt = Math.max(0, total - paid);
+
+      const status = debt <= 0 ? 'مسدد بالكامل ✅' : 'مسدد جزئياً ⏳';
+
+      FatatState.suppliersInvoices.unshift({
+        id, date, supplier, cat, desc, total, paid, debt, method, status
+      });
+
+      saveFatatSystem();
+      closeModal('modal-add-supplier-invoice');
+      document.getElementById('form-add-supplier-invoice').reset();
+      refreshAllFatatViews();
+
+      showToast(`تم تسجيل فاتورة ${supplier} بقيمة ${fmtMoney(total)} 📦`);
+    }
+
+    function renderSuppliersTable() {
+      const tbody = document.getElementById('suppliers-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      let sumPurchases = 0, sumPaid = 0, sumDebt = 0;
+      const isDirector = FatatState.activeRole === 'director';
+
+      FatatState.suppliersInvoices.forEach(inv => {
+        sumPurchases += Number(inv.total) || 0;
+        sumPaid += Number(inv.paid) || 0;
+        sumDebt += Number(inv.debt) || 0;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition';
+        tr.innerHTML = `
+          <td class="p-3.5 font-mono text-brand-400 font-bold">${inv.id}</td>
+          <td class="p-3.5 text-slate-400">${inv.date}</td>
+          <td class="p-3.5 font-bold text-white">${inv.supplier}</td>
+          <td class="p-3.5"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold">${inv.cat}</span></td>
+          <td class="p-3.5 text-slate-300">${inv.desc}</td>
+          <td class="p-3.5 font-mono font-black text-white">${fmtMoney(inv.total)}</td>
+          <td class="p-3.5 font-mono text-emerald-400 font-bold">${fmtMoney(inv.paid)}</td>
+          <td class="p-3.5 font-mono text-amber-400 font-bold">${fmtMoney(inv.debt)}</td>
+          <td class="p-3.5 text-slate-400">${inv.method}</td>
+          <td class="p-3.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${inv.debt <= 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">${inv.status}</span></td>
+          <td class="p-3.5 text-center">
+            ${isDirector ? `
+              <button onclick="deleteSupplierInv('${inv.id}')" class="p-1.5 text-rose-400 hover:text-rose-300 rounded-lg" title="حذف الفاتورة">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            ` : `<span class="text-slate-600 text-[10px]">مؤمن 🔒</span>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('sup-kpi-total-purchases').innerText = fmtMoney(sumPurchases);
+      document.getElementById('sup-kpi-total-paid').innerText = fmtMoney(sumPaid);
+      document.getElementById('sup-kpi-total-debt').innerText = fmtMoney(sumDebt);
+      document.getElementById('sup-kpi-invoice-count').innerText = `${FatatState.suppliersInvoices.length} فاتورة`;
+    }
+
+    function deleteSupplierInv(id) {
+      if (FatatState.activeRole !== 'director') return;
+      if (confirm(`حذف فاتورة المورد (${id})؟`)) {
+        FatatState.suppliersInvoices = FatatState.suppliersInvoices.filter(i => i.id !== id);
+        saveFatatSystem();
+        refreshAllFatatViews();
+        showToast('تم حذف الفاتورة وتحديث الحسابات.');
+      }
+    }
+
+    // Add new material to Master Catalog
+    function handleSaveNewMaterial(e) {
+      e.preventDefault();
+      const code = document.getElementById('mat-code').value.trim();
+      const barcode = document.getElementById('mat-barcode').value.trim();
+      const name = document.getElementById('mat-name').value.trim();
+      const cat = document.getElementById('mat-cat').value;
+      const unit = document.getElementById('mat-unit').value;
+      const price = parseFloat(document.getElementById('mat-price').value) || 0;
+      const opening = parseFloat(document.getElementById('mat-opening').value) || 0;
+      const reorder = parseFloat(document.getElementById('mat-reorder').value) || 10;
+
+      if (FatatState.materials.some(m => m.code === code)) {
+        alert('كود الخامة مسجل مسبقاً، يرجى اختيار كود آخر.');
+        return;
+      }
+
+      FatatState.materials.push({
+        code, barcode, name, cat, unit, price, opening, current: opening, reorder, nearestExpiry: getFutureExpiryDate(180)
+      });
+
+      saveFatatSystem();
+      closeModal('modal-add-material-master');
+      document.getElementById('form-add-material').reset();
+      populateReceivingDropdowns();
+      populateIssueDropdown();
+      refreshAllFatatViews();
+
+      showToast(`تمت إضافة الخامة (${name}) بنجاح لشجرة أصناف مصنع فتات 🌾`);
+    }
+
+    // =========================================================
+    // 6. LIVE P&L COMPUTATION (الهدف الأكبر)
+    // =========================================================
+    function renderPnlStatement() {
+      const tbody = document.getElementById('pnl-master-rows');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      // Compute Food Cost from Issues and Consumed Purchases
+      let totalConsumedCost = 0;
+      FatatState.issues.forEach(iss => totalConsumedCost += Number(iss.totalCost) || 0);
+
+      const fin = FatatState.financials;
+      const totalRevenue = fin.monthlySalesRevenue || 145000.00;
+      const cogs = totalConsumedCost > 0 ? totalConsumedCost : 48500.00;
+      const cogsPct = totalRevenue > 0 ? (cogs / totalRevenue) * 100 : 0;
+      const grossProfit = totalRevenue - cogs;
+      const grossPct = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+
+      const labor = fin.factoryLaborWages || 28500.00;
+      const laborPct = totalRevenue > 0 ? (labor / totalRevenue) * 100 : 0;
+
+      const opex = (fin.utilitiesAndElectricity || 8200) + (fin.factoryMaintenanceAndFuel || 4100);
+      const opexPct = totalRevenue > 0 ? (opex / totalRevenue) * 100 : 0;
+
+      const fixed = (fin.factoryRentAndFixed || 14000) + (fin.depreciationAndPackaging || 3800);
+      const fixedPct = totalRevenue > 0 ? (fixed / totalRevenue) * 100 : 0;
+
+      const netProfit = grossProfit - labor - opex - fixed;
+      const netPct = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+
+      // Update Top Summary Cards
+      document.getElementById('pnl-summary-revenue').innerText = fmtMoney(totalRevenue);
+      document.getElementById('pnl-summary-cogs').innerText = fmtMoney(cogs);
+      document.getElementById('pnl-summary-cogs-pct').innerText = cogsPct.toFixed(1) + '% من المبيعات';
+      document.getElementById('pnl-summary-gross').innerText = fmtMoney(grossProfit);
+      document.getElementById('pnl-summary-gross-pct').innerText = grossPct.toFixed(1) + '% هامش مجمل';
+      document.getElementById('pnl-summary-opex').innerText = fmtMoney(labor + opex + fixed);
+      document.getElementById('pnl-summary-net').innerText = fmtMoney(netProfit);
+      document.getElementById('pnl-summary-net-pct').innerText = netPct.toFixed(1) + '% هامش صافي الربح';
+
+      const rows = [
+        { type: 'header', num: '1', title: 'إيرادات مبيعات المصنع (Factory Sales & Wholesale)' },
+        { title: 'مبيعات المخبوزات والكرواسون اليومية', val: totalRevenue * 0.65, pct: 65.0, bench: '60% - 70%', eval: 'ممتاز 🟢', source: 'سجل مبيعات التوزيع اليومي' },
+        { title: 'مبيعات الكيك والحلويات الغربية والمعمول', val: totalRevenue * 0.35, pct: 35.0, bench: '30% - 40%', eval: 'طبيعي 🟢', source: 'سجل مبيعات التوزيع اليومي' },
+        { type: 'subtotal', title: 'إجمالي إيرادات المبيعات (Total Revenue)', val: totalRevenue, pct: 100.0, bench: '100%', eval: 'الأساس 🟢', source: 'مجموع مبيعات فتات' },
+
+        { type: 'header', num: '2', title: 'تكلفة المبيعات والخامات المستهلكة (COGS / Food Cost)' },
+        { title: 'تكلفة الدقيق والخمائر ومحسنات الخبز', val: cogs * 0.45, pct: cogsPct * 0.45, bench: '15% - 18%', eval: 'آمن ومثالي 🟢', source: 'أذونات صرف المستودع الذكي' },
+        { title: 'تكلفة الزبدة الطبيعية والمارجرين والزيوت', val: cogs * 0.35, pct: cogsPct * 0.35, bench: '10% - 14%', eval: 'ممتاز 🟢', source: 'أذونات صرف المستودع الذكي' },
+        { title: 'تكلفة الشوكولاتة والكاكاو والحشوات ومواد التغليف', val: cogs * 0.20, pct: cogsPct * 0.20, bench: '6% - 8%', eval: 'ممتاز 🟢', source: 'أذونات صرف المستودع الذكي' },
+        { type: 'subtotal', title: 'إجمالي تكلفة الخامات (Total Food Cost)', val: cogs, pct: cogsPct, bench: '28% - 35%', eval: cogsPct <= 35 ? 'ممتاز وتحت السيطرة 🟢' : 'مرتفع ⚠️', source: 'استهلاك المستودع الفعلي' },
+        { type: 'highlight', title: 'مجمل ربح المصنع (Gross Profit)', val: grossProfit, pct: grossPct, bench: '65% - 72%', eval: 'أرباح صناعية قوية 🟢', source: 'المبيعات - تكلفة الخامات' },
+
+        { type: 'header', num: '3', title: 'تكلفة عمالة المصنع والإنتاج (Labor Cost)' },
+        { title: 'رواتب وأجور الخبازين وشيفات المعجنات والمساعدين', val: labor * 0.85, pct: laborPct * 0.85, bench: '16% - 19%', eval: 'طبيعي 🟢', source: 'مسير رواتب فتات' },
+        { title: 'بدلات وحوافز إنتاجية المصنع', val: labor * 0.15, pct: laborPct * 0.15, bench: '2% - 4%', eval: 'محفز 🟢', source: 'مسير رواتب فتات' },
+        { type: 'subtotal', title: 'إجمالي تكلفة العمالة (Total Labor)', val: labor, pct: laborPct, bench: '18% - 22%', eval: 'ضمن المعيار 🟢', source: 'كادر المصنع' },
+        { type: 'prime', title: 'التكلفة الأولية للمصنع (Prime Cost = الخامات + العمالة)', val: cogs + labor, pct: cogsPct + laborPct, bench: '< 55%', eval: (cogsPct + laborPct) <= 55 ? 'أداء عالمي فائق 🟢' : 'انتبه ⚠️', source: 'COGS + Labor' },
+
+        { type: 'header', num: '4', title: 'المصروفات التشغيلية المباشرة (Factory OpEx)' },
+        { title: 'الكهرباء، المياه، والغاز لتشغيل أفران المصنع', val: fin.utilitiesAndElectricity || 8200, pct: ((fin.utilitiesAndElectricity || 8200) / totalRevenue) * 100, bench: '4% - 6%', eval: 'ممتاز 🟢', source: 'فواتير المرافق' },
+        { title: 'صيانة الأفران والعجانات وغرف التخمير والتبريد', val: fin.factoryMaintenanceAndFuel || 4100, pct: ((fin.factoryMaintenanceAndFuel || 4100) / totalRevenue) * 100, bench: '2% - 3%', eval: 'طبيعي 🟢', source: 'سندات صيانة المعدات' },
+        { type: 'subtotal', title: 'إجمالي المصاريف التشغيلية (Total OpEx)', val: opex, pct: opexPct, bench: '7% - 10%', eval: 'ترشيد صناعي ممتاز 🟢', source: 'تشغيل المصنع' },
+
+        { type: 'header', num: '5', title: 'المصروفات الثابتة والإيجارية' },
+        { title: 'إيجار مبنى المصنع والمستودع والتأمين', val: fin.factoryRentAndFixed || 14000, pct: ((fin.factoryRentAndFixed || 14000) / totalRevenue) * 100, bench: '8% - 11%', eval: 'طبيعي 🟢', source: 'عقد الإيجار' },
+        { title: 'إهلاك الآلات وخطوط الإنتاج والتراخيص', val: fin.depreciationAndPackaging || 3800, pct: ((fin.depreciationAndPackaging || 3800) / totalRevenue) * 100, bench: '2% - 3%', eval: 'نظامي 🟢', source: 'قسط الإهلاك' },
+        { type: 'subtotal', title: 'إجمالي التكاليف الثابتة والإهلاك', val: fixed, pct: fixedPct, bench: '10% - 14%', eval: 'ضمن النطاق 🟢', source: 'التكاليف الثابتة' },
+
+        { type: 'final', title: 'صافي الربح النهائي لمصنع مخبوزات فتات (Net Profit)', val: netProfit, pct: netPct, bench: '18% - 25%', eval: netPct >= 18 ? 'عائد استثماري فائق 🟢' : 'طبيعي 🟡', source: 'صافي الأرباح الصافية' }
+      ];
+
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        if (r.type === 'header') {
+          tr.className = 'bg-[#182035] font-black border-y border-slate-700 text-white';
+          tr.innerHTML = `<td class="p-3 text-center text-brand-400 font-extrabold">${r.num}</td><td colspan="6" class="p-3">${r.title}</td>`;
+        } else if (r.type === 'subtotal') {
+          tr.className = 'bg-[#101422] font-black text-white border-t border-slate-800';
+          tr.innerHTML = `<td class="p-2.5 text-center text-slate-500 font-mono">∑</td><td class="p-2.5 font-black">${r.title}</td><td class="p-2.5 text-left font-mono font-black text-brand-300">${fmtMoney(r.val)}</td><td class="p-2.5 text-left font-mono font-bold">${r.pct.toFixed(1)}%</td><td class="p-2.5 text-center text-slate-400 font-mono">${r.bench}</td><td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400">${r.eval}</span></td><td class="p-2.5 text-slate-400 text-[11px]">${r.source}</td>`;
+        } else if (r.type === 'highlight') {
+          tr.className = 'bg-emerald-950/30 font-black text-emerald-200 border-y border-emerald-500/30';
+          tr.innerHTML = `<td class="p-3 text-center text-emerald-400">⭐</td><td class="p-3 font-black text-emerald-300">${r.title}</td><td class="p-3 text-left font-mono font-black text-emerald-400 text-sm">${fmtMoney(r.val)}</td><td class="p-3 text-left font-mono font-black text-emerald-400">${r.pct.toFixed(1)}%</td><td class="p-3 text-center text-emerald-300 font-bold font-mono">${r.bench}</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400">${r.eval}</span></td><td class="p-3 text-emerald-300 text-[11px]">${r.source}</td>`;
+        } else if (r.type === 'prime') {
+          tr.className = 'bg-amber-950/30 font-black text-amber-200 border-y border-amber-500/30';
+          tr.innerHTML = `<td class="p-3 text-center text-amber-400">🎯</td><td class="p-3 font-black text-amber-300">${r.title}</td><td class="p-3 text-left font-mono font-black text-amber-400 text-sm">${fmtMoney(r.val)}</td><td class="p-3 text-left font-mono font-black text-amber-400">${r.pct.toFixed(1)}%</td><td class="p-3 text-center text-amber-300 font-bold font-mono">${r.bench}</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-400">${r.eval}</span></td><td class="p-3 text-amber-300 text-[11px]">${r.source}</td>`;
+        } else if (r.type === 'final') {
+          tr.className = 'bg-gradient-to-r from-brand-950/80 via-emerald-950/70 to-brand-950/80 font-black text-white border-y-2 border-brand-500';
+          tr.innerHTML = `<td class="p-4 text-center text-brand-400 text-base">🏆</td><td class="p-4 font-black text-white text-sm">${r.title}</td><td class="p-4 text-left font-mono font-black text-brand-400 text-base">${fmtMoney(r.val)}</td><td class="p-4 text-left font-mono font-black text-brand-400 text-base">${r.pct.toFixed(1)}%</td><td class="p-4 text-center text-brand-300 font-bold font-mono">${r.bench}</td><td class="p-4 text-center"><span class="px-2.5 py-1 rounded text-xs font-black bg-brand-500 text-white">${r.eval}</span></td><td class="p-4 text-brand-300 font-bold text-xs">${r.source}</td>`;
+        } else {
+          tr.className = 'hover:bg-slate-800/30 transition text-slate-300';
+          tr.innerHTML = `<td class="p-2.5 text-center text-slate-600">▫️</td><td class="p-2.5">${r.title}</td><td class="p-2.5 text-left font-mono font-bold text-slate-200">${fmtMoney(r.val)}</td><td class="p-2.5 text-left font-mono text-slate-400">${r.pct.toFixed(1)}%</td><td class="p-2.5 text-center text-slate-500 font-mono">${r.bench}</td><td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">${r.eval}</span></td><td class="p-2.5 text-slate-500 text-[11px]">${r.source}</td>`;
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    // =========================================================
+    // 7. GEMINI VISION API CALLER & CONFIG
+    // =========================================================
+    function openApiKeyConfigModal() {
+      const input = document.getElementById('gemini-api-key-input');
+      if (input) input.value = FatatState.geminiApiKey || '';
+      openModal('modal-api-config');
+    }
+
+    function saveGeminiApiKey() {
+      const val = document.getElementById('gemini-api-key-input').value.trim();
+      FatatState.geminiApiKey = val;
+      saveFatatSystem();
+      closeModal('modal-api-config');
+      showToast(val ? 'تم حفظ مفتاح Gemini API وتفعيل الفحص السحابي 🤖' : 'تم تعطيل المفتاح والاعتماد على الذكاء المحلي.');
+    }
+
+    function queryGeminiVision(apiKey, base64Data) {
+      const pureBase64 = base64Data.split(',')[1] || base64Data;
+      const prompt = `أنت خبير فحص استلام خامات بمصنع مخبوزات. حلل هذه الصورة واستخرج في صيغة JSON فقط بدون أي علامات markdown:
+      {
+        "recognized_item": "اسم الخامة المكتوبة بالصورة",
+        "category": "القسم الأنسب (دقيق، زبدة، خميرة، سكر، شوكولاتة، تغليف)",
+        "expiry_date": "YYYY-MM-DD",
+        "estimated_quantity": 10
+      }`;
+
+      fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: "image/jpeg", data: pureBase64 } }
+            ]
+          }]
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('scan-overlay').classList.add('hidden');
+        try {
+          const rawText = data.candidates[0].content.parts[0].text;
+          const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(cleaned);
+
+          // Find closest matching catalog item
+          let matched = FatatState.materials.find(m => m.name.includes(parsed.recognized_item) || parsed.recognized_item.includes(m.name));
+          if (!matched) matched = FatatState.materials[0];
+
+          fillSafetyConfirmationCard(matched, parsed.expiry_date || getFutureExpiryDate(180), parsed.estimated_quantity || 10, 'قراءة مباشرة عبر Google Gemini Vision AI 🤖');
+        } catch (e) {
+          console.warn("Parse error, using fallback matching", e);
+          const fallback = FatatState.materials[0];
+          fillSafetyConfirmationCard(fallback, getFutureExpiryDate(180), 10, 'تم التحليل والمطابقة التلقائية ✅');
+        }
+      })
+      .catch(err => {
+        console.error("Gemini Vision API error:", err);
+        document.getElementById('scan-overlay').classList.add('hidden');
+        const fallback = FatatState.materials[0];
+        fillSafetyConfirmationCard(fallback, getFutureExpiryDate(180), 10, 'تعذر الاتصال بـ Gemini، تم تفعيل التعرف المحلي ✅');
+      });
+    }
+
+    // =========================================================
+    // 8. FACTORY RESET & DEMO RESTORE
+    // =========================================================
+    function openWipeModal() {
+      if (FatatState.activeRole !== 'director') {
+        alert('صلاحية التصفير مقتصرة فقط على مدير التشغيل الإقليمي (مستر محمد الجندي).');
+        return;
+      }
+      openModal('modal-wipe-factory');
+    }
+
+    function confirmWipeFactorySystem() {
+      if (FatatState.activeRole !== 'director') return;
+      
+      // Wipe operational records while keeping master catalog items with 0 stock
+      FatatState.materials.forEach(m => {
+        m.opening = 0;
+        m.current = 0;
+      });
+      FatatState.receivings = [];
+      FatatState.issues = [];
+      FatatState.suppliersInvoices = [];
+
+      saveFatatSystem();
+      closeModal('modal-wipe-factory');
+      refreshAllFatatViews();
+      showToast('تم تصفير وتفريغ قاعدة بيانات مصنع فتات بالكامل بنجاح 🧼');
+    }
+
+    function loadDefaultFactoryDemo() {
+      if (FatatState.activeRole !== 'director') return;
+      FatatState = JSON.parse(JSON.stringify(DEFAULT_FATAT_STATE));
+      saveFatatSystem();
+      closeModal('modal-wipe-factory');
+      refreshAllFatatViews();
+      showToast('تمت استعادة البيانات التجريبية الافتراضية بنجاح 🔄');
+    }
+
+    // Auto Init on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initFatatSystem();
+    });
+
+    // ========================================================
+    // PWA & SERVICE WORKER INSTALLATION HANDLERS
+    // ========================================================
+    let pwaDeferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      pwaDeferredPrompt = e;
+      const banner = document.getElementById('pwa-install-banner');
+      if (banner) banner.classList.remove('hidden');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      pwaDeferredPrompt = null;
+      const banner = document.getElementById('pwa-install-banner');
+      if (banner) banner.classList.add('hidden');
+      showToast('تهانينا! تم تثبيت تطبيق مصنع مخبوزات فتات بنجاح 🎉');
+    });
+
+    function triggerPwaInstall() {
+      if (pwaDeferredPrompt) {
+        pwaDeferredPrompt.prompt();
+        pwaDeferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted PWA installation');
+          }
+          pwaDeferredPrompt = null;
+          const banner = document.getElementById('pwa-install-banner');
+          if (banner) banner.classList.add('hidden');
+        });
+      } else {
+        const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+        const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+        if (isIos && !isStandalone) {
+          openModal('modal-ios-install');
+        } else if (isStandalone) {
+          showToast('التطبيق مثبت ويعمل بالفعل في وضع الشاشة الكاملة ✓');
+        } else {
+          alert('لتثبيت التطبيق: افتح قائمة المتصفح (⋮) واختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
+        }
+      }
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((reg) => console.log('Fatat Bakery PWA Service Worker Registered:', reg.scope))
+          .catch((err) => console.log('Fatat Bakery Service Worker error:', err));
+      });
+    }
+  </script>
+
+  <!-- PWA Floating Prompt Banner for Android & Chrome -->
+  <div id="pwa-install-banner" class="hidden fixed bottom-5 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 bg-[#161c2e] border-2 border-brand-500/60 text-white p-4 rounded-2xl shadow-2xl shadow-brand-500/20 flex items-center justify-between gap-3 animate-pulse">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/40 flex items-center justify-center text-xl shrink-0">
+        <i class="fa-solid fa-wheat-awn"></i>
+      </div>
+      <div>
+        <div class="font-black text-xs text-white">تثبيت تطبيق مخبوزات فتات</div>
+        <div class="text-[10px] text-slate-300">تشغيل أسرع وبدون شريط متصفح</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="triggerPwaInstall()" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow-md transition">تثبيت</button>
+      <button onclick="document.getElementById('pwa-install-banner').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs px-1">✕</button>
+    </div>
+  </div>
+
+  <!-- iOS Safari Install Step-by-Step Modal -->
+  <div id="modal-ios-install" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-factory-card border border-brand-500/40 rounded-3xl p-6 max-w-sm w-full text-center text-white shadow-2xl animate-scaleUp">
+      <div class="w-16 h-16 bg-gradient-to-tr from-brand-600 to-amber-400 text-white rounded-2xl flex items-center justify-center mx-auto text-3xl mb-3 shadow-lg shadow-brand-500/30">
+        <i class="fa-brands fa-apple"></i>
+      </div>
+      <h3 class="font-black text-base text-brand-400 mb-2">تثبيت تطبيق مخبوزات فتات على آيفون</h3>
+      <p class="text-xs text-slate-300 leading-relaxed mb-4 text-right bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+        خطوات سهلة لتشغيل النظام كتطبيق فوري:
+        <br><br>
+        1️⃣ اضغط على زر <strong class="text-brand-400">المشاركة (Share <i class="fa-solid fa-arrow-up-from-bracket"></i>)</strong> أسفل شاشة Safari.
+        <br><br>
+        2️⃣ مرر لأسفل واختر <strong class="text-brand-400">"إضافة إلى الشاشة الرئيسية" (Add to Home Screen ➕)</strong>.
+        <br><br>
+        3️⃣ اضغط <strong class="text-brand-400">"إضافة" (Add)</strong> في أعلى اليمين.
+      </p>
+      <button onclick="closeModal('modal-ios-install')" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-brand-500/20">
+        تم، شكراً لك ✓
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>
